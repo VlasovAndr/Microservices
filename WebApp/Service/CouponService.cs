@@ -1,5 +1,4 @@
-﻿
-using WebApp.Models;
+﻿using WebApp.Models;
 using WebApp.Service.IService;
 using WebApp.Utility;
 
