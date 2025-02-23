@@ -8,7 +8,7 @@ namespace AuthAPI.Controllers
 	[ApiController]
 	public class AuthAPIController : ControllerBase
 	{
-		private readonly  IAuthService _authService;
+		private readonly IAuthService _authService;
 		protected ResponseDto _responce;
 
 		public AuthAPIController(IAuthService authService)
@@ -22,7 +22,7 @@ namespace AuthAPI.Controllers
 		{
 			var errorMessage = await _authService.Register(model);
 
-			if (!string.IsNullOrEmpty(errorMessage)) 
+			if (!string.IsNullOrEmpty(errorMessage))
 			{
 				_responce.IsSuccess = false;
 				_responce.Message = errorMessage;
@@ -33,9 +33,35 @@ namespace AuthAPI.Controllers
 		}
 
 		[HttpPost("login")]
-		public async Task<IActionResult> Login()
+		public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
 		{
-			return Ok();
+			var loginResponse = await _authService.Login(model);
+
+			if (loginResponse.User == null)
+			{
+				_responce.IsSuccess = false;
+				_responce.Message = "Username or password is incorrect";
+				return BadRequest(_responce);
+
+			}
+			_responce.Result = loginResponse;
+			return Ok(_responce);
+		}
+
+		[HttpPost("AssignRole")]
+		public async Task<IActionResult> AssignRole([FromBody] RegistrationRequestDto model)
+		{
+			var assignRoleSuccessful = await _authService.AssignRole(model.Email, model.Role.ToUpper());
+
+			if (!assignRoleSuccessful)
+			{
+				_responce.IsSuccess = false;
+				_responce.Message = "Error encountred";
+				return BadRequest(_responce);
+
+			}
+
+			return Ok(_responce);
 		}
 
 	}
