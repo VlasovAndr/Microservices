@@ -35,9 +35,10 @@ namespace AuthAPI.Service
 				{
 					//create role if it does not exist
 					_roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
-					await _userManager.AddToRoleAsync(user, roleName);
-					return true;
 				}
+
+				await _userManager.AddToRoleAsync(user, roleName);
+				return true;
 			}
 
 			return false;
