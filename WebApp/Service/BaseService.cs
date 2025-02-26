@@ -16,7 +16,7 @@ namespace WebApp.Service
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ResponseDto?> SendAsunc(RequestDto requestDto)
+        public async Task<ResponseDto?> SendAsync(RequestDto requestDto)
         {
             try
             {
