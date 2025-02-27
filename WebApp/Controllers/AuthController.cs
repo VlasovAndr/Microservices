@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using WebApp.Models;
 using WebApp.Service.IService;
 using WebApp.Utility;
@@ -35,6 +36,24 @@ namespace WebApp.Controllers
 
 			ViewBag.RoleList = roleList;
 			return View();
+		}
+
+		[HttpPost]
+
+		public async Task<IActionResult> Login(LoginRequestDto obj)
+		{
+			ResponseDto responseDto = await _authService.LoginAsync(obj);
+
+			if (responseDto != null && responseDto.IsSuccess)
+			{
+				LoginResponseDto loginResponseDto = JsonConvert.DeserializeObject<LoginResponseDto>(Convert.ToString(responseDto.Result));
+				return RedirectToAction("Index", "Home");
+			}
+			else
+			{
+				ModelState.AddModelError("CustomError", responseDto.Message);
+				return View(obj);
+			}
 		}
 
 		[HttpPost]
