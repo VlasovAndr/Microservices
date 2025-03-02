@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{2D5C069C-01AD-499D-8F0B-E4056CEED3B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CouponAPI", "Microservices.Services.CouponAPI\CouponAPI.csproj", "{745F1C99-7427-407D-885F-F77DC9CC86D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CouponAPI", "CouponAPI\CouponAPI.csproj", "{745F1C99-7427-407D-885F-F77DC9CC86D3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "WebApp\WebApp.csproj", "{E527D2AF-48F0-4354-BDBA-7DD3D202B353}"
 EndProject
