@@ -61,7 +61,7 @@ namespace WebApp.Controllers
 			}
 			else
 			{
-				ModelState.AddModelError("CustomError", responseDto.Message);
+				TempData["error"] = responseDto.Message;
 				return View(obj);
 			}
 		}
@@ -86,6 +86,10 @@ namespace WebApp.Controllers
 					TempData["success"] = "Registration Successful";
 					return RedirectToAction(nameof(Login));
 				}
+			}
+			else
+			{
+				TempData["error"] = result.Message;
 			}
 
 			var roleList = new List<SelectListItem>()
