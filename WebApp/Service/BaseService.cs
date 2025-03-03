@@ -10,19 +10,28 @@ namespace WebApp.Service
     public class BaseService : IBaseService
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ITokenProvider _tokenProvider;
 
-        public BaseService(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-        }
+		public BaseService(IHttpClientFactory httpClientFactory, ITokenProvider tokenProvider)
+		{
+			_httpClientFactory = httpClientFactory;
+			_tokenProvider = tokenProvider;
+		}
 
-        public async Task<ResponseDto?> SendAsync(RequestDto requestDto)
+		public async Task<ResponseDto?> SendAsync(RequestDto requestDto, bool withBearer = true)
         {
             try
             {
                 HttpClient client = _httpClientFactory.CreateClient("API_Client");
                 HttpRequestMessage message = new();
                 message.Headers.Add("Accept", "application/json");
+                // Add Token
+                if (withBearer)
+                {
+                    var token = _tokenProvider.GetToken();
+                    message.Headers.Add("Authorization", $"Bearer {token}");
+				}
+
                 message.RequestUri = new Uri(requestDto.Url);
 
                 if (requestDto.Data != null)
@@ -51,7 +60,7 @@ namespace WebApp.Service
 
                 apiResponse = await client.SendAsync(message);
 
-                switch (apiResponse.StatusCode)
+				switch (apiResponse.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
                         return new() { IsSuccess = false, Message = "Not Found" };
@@ -59,7 +68,9 @@ namespace WebApp.Service
                         return new() { IsSuccess = false, Message = "Access Denied" };
                     case HttpStatusCode.NonAuthoritativeInformation:
                         return new() { IsSuccess = false, Message = "Unautorized" };
-                    case HttpStatusCode.InternalServerError:
+					case HttpStatusCode.Unauthorized:
+						return new() { IsSuccess = false, Message = "Unautorized" };
+					case HttpStatusCode.InternalServerError:
                         return new() { IsSuccess = false, Message = "Internal Server Error" };
                     default:
                         var apiContent = await apiResponse.Content.ReadAsStringAsync();
