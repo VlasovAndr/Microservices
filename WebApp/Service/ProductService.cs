@@ -41,15 +41,6 @@ namespace WebApp.Service
 			});
 		}
 
-		public async Task<ResponseDto?> GetProductAsync(string name)
-		{
-			return await _baseService.SendAsync(new RequestDto()
-			{
-				ApiType = SD.ApiType.GET,
-				Url = SD.ProductAPIBase + "/api/product/GetByName/" + name
-			});
-		}
-
 		public async Task<ResponseDto?> GetProductByIdAsync(int id)
 		{
 			return await _baseService.SendAsync(new RequestDto()

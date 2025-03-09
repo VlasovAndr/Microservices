@@ -56,23 +56,6 @@ namespace ProductAPI.Controllers
 			return _response;
 		}
 
-		[HttpGet]
-		[Route("GetByName{name}")]
-		public ResponseDto Get(string name)
-		{
-			try
-			{
-				Product obj = _db.Products.First(x => x.Name.ToLower() == name.ToLower());
-				_response.Result = _mapper.Map<ProductDto>(obj);
-			}
-			catch (Exception ex)
-			{
-				_response.IsSuccess = false;
-				_response.Message = ex.Message;
-			}
-			return _response;
-		}
-
 		[HttpPost]
 		[Authorize(Roles = "ADMIN")]
 		public ResponseDto Post([FromBody] ProductDto productDto)

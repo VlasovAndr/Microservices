@@ -4,7 +4,6 @@ namespace WebApp.Service.IService
 {
 	public interface IProductService
 	{
-		Task<ResponseDto?> GetProductAsync(string name);
 		Task<ResponseDto?> GetAllProductsAsync();
 		Task<ResponseDto?> GetProductByIdAsync(int id);
 		Task<ResponseDto?> CreateProductAsync(ProductDto couponDto);

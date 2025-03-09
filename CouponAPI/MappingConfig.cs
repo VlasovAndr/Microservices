@@ -10,8 +10,7 @@ namespace CouponAPI
         {
             var mappingConfig = new MapperConfiguration(config =>
             {
-                config.CreateMap<CouponDto, Coupon>();
-                config.CreateMap<Coupon, CouponDto>();
+                config.CreateMap<CouponDto, Coupon>().ReverseMap();
             });
             return mappingConfig;
         }
