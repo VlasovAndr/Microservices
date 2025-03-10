@@ -10,7 +10,7 @@ using ProductAPI.Data;
 
 namespace ProductAPI.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(ProductDbContext))]
     [Migration("20250304105755_InitialCreate")]
     partial class InitialCreate
     {
