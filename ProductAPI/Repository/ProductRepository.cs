@@ -9,7 +9,7 @@ namespace ProductAPI.Repository
 
         public ProductRepository(ProductDbContext context)
         {
-            this._db = context;
+            _db = context;
         }
 
         public List<Product> GetAllProducts()
