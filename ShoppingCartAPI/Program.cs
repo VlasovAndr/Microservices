@@ -5,6 +5,8 @@ using Microsoft.OpenApi.Models;
 using ShoppingCartAPI;
 using ShoppingCartAPI.Data;
 using ShoppingCartAPI.Extensions;
+using ShoppingCartAPI.Service;
+using ShoppingCartAPI.Service.IService;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add DbContext to the container.
@@ -16,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:ProductAPI"]));
 // Add Controllers to the container.
 builder.Services.AddControllers();
 // Add Swagger to the container.
