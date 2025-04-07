@@ -12,15 +12,18 @@ builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<ICouponService, CouponService>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IProductService, ProductService>();
-SD.CouponAPI = builder.Configuration["ServiceUrls:CouponAPI"];
-SD.AuthAPI = builder.Configuration["ServiceUrls:AuthAPI"];
-SD.ProductAPI = builder.Configuration["ServiceUrls:ProductAPI"];
+builder.Services.AddHttpClient<IShoppingCartService, ShoppingCartService>();
+SD.CouponAPIBaseUrl = builder.Configuration["ServiceUrls:CouponAPI"];
+SD.AuthAPIBaseUrl = builder.Configuration["ServiceUrls:AuthAPI"];
+SD.ProductAPIBaseUrl = builder.Configuration["ServiceUrls:ProductAPI"];
+SD.ShoppingCartAPIBaseUrl = builder.Configuration["ServiceUrls:ShoppingCartAPI"];
 
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>

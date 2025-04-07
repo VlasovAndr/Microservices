@@ -19,7 +19,7 @@ namespace WebApp.Service
 			{
 				ApiType = SD.ApiType.POST,
 				Data = productDto,
-				Url = SD.ProductAPI + "/api/product/"
+				Url = SD.ProductAPIBaseUrl + "/api/product/"
 			});
 		}
 
@@ -28,7 +28,7 @@ namespace WebApp.Service
 			return await _baseService.SendAsync(new RequestDto()
 			{
 				ApiType = SD.ApiType.DELETE,
-				Url = SD.ProductAPI + "/api/product/" + id
+				Url = SD.ProductAPIBaseUrl + "/api/product/" + id
 			});
 		}
 
@@ -37,7 +37,7 @@ namespace WebApp.Service
 			return await _baseService.SendAsync(new RequestDto()
 			{
 				ApiType = SD.ApiType.GET,
-				Url = SD.ProductAPI + "/api/product/"
+				Url = SD.ProductAPIBaseUrl + "/api/product/"
 			});
 		}
 
@@ -46,7 +46,7 @@ namespace WebApp.Service
 			return await _baseService.SendAsync(new RequestDto()
 			{
 				ApiType = SD.ApiType.GET,
-				Url = SD.ProductAPI + "/api/product/" + id
+				Url = SD.ProductAPIBaseUrl + "/api/product/" + id
 			});
 		}
 
@@ -56,7 +56,7 @@ namespace WebApp.Service
 			{
 				ApiType = SD.ApiType.PUT,
 				Data = productDto,
-				Url = SD.ProductAPI + "/api/product/"
+				Url = SD.ProductAPIBaseUrl + "/api/product/"
 			});
 		}
 	}
