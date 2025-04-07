@@ -1,21 +1,19 @@
-﻿namespace WebApp.Utility
+﻿namespace WebApp.Utility;
+
+public class SD
 {
+    public static string CouponAPI { get; set; }
+    public static string AuthAPI { get; set; }
+    public static string ProductAPI { get; set; }
+    public const string RoleAdmin = "ADMIN";
+    public const string RoleCustomer = "CUSTOMER";
+    public const string TokenCookie = "JWTToken";
 
-	public class SD
-	{
-		public static string CouponAPIBase { get; set; }
-		public static string AuthAPIBase { get; set; }
-		public static string ProductAPIBase { get; set; }
-		public const string RoleAdmin = "ADMIN";
-		public const string RoleCustomer = "CUSTOMER";
-		public const string TokenCookie = "JWTToken";
-
-		public enum ApiType
-		{
-			GET,
-			POST,
-			PUT,
-			DELETE
-		}
-	}
+    public enum ApiType
+    {
+        GET,
+        POST,
+        PUT,
+        DELETE
+    }
 }
