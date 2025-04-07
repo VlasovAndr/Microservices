@@ -16,13 +16,15 @@ public class CartAPIController : ControllerBase
     private IMapper _mapper;
     private readonly AppDbContext _db;
     private readonly IProductService _productService;
+    private readonly ICouponService _couponService;
 
-    public CartAPIController(IMapper mapper, AppDbContext db, IProductService productService)
+    public CartAPIController(IMapper mapper, AppDbContext db, IProductService productService, ICouponService couponService)
     {
         _response = new ResponseDto();
         _mapper = mapper;
         _db = db;
         _productService = productService;
+        _couponService = couponService;
     }
 
     [HttpGet("GetCart/{userId}")]
@@ -44,6 +46,17 @@ public class CartAPIController : ControllerBase
             {
                 item.Product = productDtos.FirstOrDefault(u => u.ProductId == item.ProductId);
                 cart.CartHeader.CartTotal += (item.Count * item.Product.Price);
+            }
+
+            //apply coupon if exists
+            if (!string.IsNullOrEmpty(cart.CartHeader.CouponCode))
+            {
+                var coupon = await _couponService.GetCoupon(cart.CartHeader.CouponCode);
+                if (coupon != null && cart.CartHeader.CartTotal > coupon.MinAmount)
+                {
+                    cart.CartHeader.CartTotal -= coupon.DiscountAmount;
+                    cart.CartHeader.Discount = coupon.DiscountAmount;
+                }
             }
 
             _response.Result = cart;

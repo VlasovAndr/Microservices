@@ -4,25 +4,25 @@ using ShoppingCartAPI.Service.IService;
 
 namespace ShoppingCartAPI.Service;
 
-public class ProductService : IProductService
+public class CouponService : ICouponService
 {
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public ProductService(IHttpClientFactory httpClientFactory)
+    public CouponService(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<IEnumerable<ProductDto>> GetProducts()
+    public async Task<CouponDto> GetCoupon(string couponCode)
     {
-        var client = _httpClientFactory.CreateClient("Product");
-        var response = await client.GetAsync("api/product");
+        var client = _httpClientFactory.CreateClient("Coupon");
+        var response = await client.GetAsync($"api/coupon/GetByCode/{couponCode}");
         var apiContent = await response.Content.ReadAsStringAsync();
         var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
         if (resp.IsSuccess)
         {
-            return JsonConvert.DeserializeObject<IEnumerable<ProductDto>>(Convert.ToString(resp.Result));
+            return JsonConvert.DeserializeObject<CouponDto>(Convert.ToString(resp.Result));
         }
-        return new List<ProductDto>();
+        return new CouponDto();
     }
 }
