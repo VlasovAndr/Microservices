@@ -9,7 +9,7 @@ namespace CouponAPI.Controllers
 {
 	[Route("api/coupon")]
 	[ApiController]
-	[Authorize]
+	//[Authorize]
 	public class CouponAPIController : ControllerBase
 	{
 		private readonly AppDbContext _db;
@@ -57,7 +57,7 @@ namespace CouponAPI.Controllers
 		}
 
 		[HttpGet]
-		[Route("GetByCode{code}")]
+		[Route("GetByCode/{code}")]
 		public ResponseDto Get(string code)
 		{
 			try
