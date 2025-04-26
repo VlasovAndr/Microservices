@@ -23,7 +23,17 @@ namespace WebApp.Service
             });
         }
 
-        public async Task<ResponseDto?> GetCartByUserIdAsync(string userId)
+		public async Task<ResponseDto?> EmailCart(CartDto cartDto)
+		{
+			return await _baseService.SendAsync(new RequestDto()
+			{
+				ApiType = SD.ApiType.POST,
+				Data = cartDto,
+				Url = SD.ShoppingCartAPIBaseUrl + "/api/cart/EmailCartRequest"
+			});
+		}
+
+		public async Task<ResponseDto?> GetCartByUserIdAsync(string userId)
         {
             return await _baseService.SendAsync(new RequestDto()
             {
