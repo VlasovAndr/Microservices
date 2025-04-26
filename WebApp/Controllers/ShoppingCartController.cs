@@ -51,7 +51,9 @@ namespace WebApp.Controllers
 		[HttpPost]
 		public async Task<IActionResult> EmailCart(CartDto cartDto)
 		{
-			ResponseDto? response = await _shoppingCartService.EmailCart(cartDto);
+			CartDto cart = await LoadCartDtoBasedOnLoggedInUser();
+			cart.CartHeader.Email = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Email)?.FirstOrDefault()?.Value;
+			ResponseDto? response = await _shoppingCartService.EmailCart(cart);
 
 			if (response != null & response.IsSuccess)
 			{
