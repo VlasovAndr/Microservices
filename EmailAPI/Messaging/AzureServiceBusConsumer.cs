@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using EmailAPI.Models.Dtos;
+using EmailAPI.Services;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -10,10 +11,11 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 	private readonly string serviceBusConnectionString;
 	private readonly string emailCartQueue;
 	private readonly IConfiguration _configuration;
+	private readonly EmailService _emailService;
 
 	private ServiceBusProcessor _emailCartProcessor;
 
-	public AzureServiceBusConsumer(IConfiguration configuration)
+	public AzureServiceBusConsumer(IConfiguration configuration, EmailService emailService)
 	{
 		_configuration = configuration;
 		serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");
@@ -21,12 +23,14 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 
 		var client = new ServiceBusClient(serviceBusConnectionString);
 		_emailCartProcessor = client.CreateProcessor(emailCartQueue);
+		_emailService = emailService;
 	}
 
 	public async Task Start()
 	{
 		_emailCartProcessor.ProcessMessageAsync += OnEmailRequestReceived;
 		_emailCartProcessor.ProcessErrorAsync += ErrorHandler;
+		await _emailCartProcessor.StartProcessingAsync();
 	}
 
 	public async Task Stop()
@@ -46,8 +50,8 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 		try
 		{
 			// TODO - try to log email
+			await _emailService.EmailCartAndLog(objMessage);
 			await args.CompleteMessageAsync(args.Message);
-
 		}
 		catch (Exception ex)
 		{
