@@ -23,7 +23,6 @@ namespace WebApp.Controllers
 		}
 
 		[HttpGet]
-
 		public IActionResult Login()
 		{
 			LoginRequestDto loginRequestDto = new LoginRequestDto();
@@ -31,7 +30,6 @@ namespace WebApp.Controllers
 		}
 
 		[HttpGet]
-
 		public IActionResult Register()
 		{
 			var roleList = new List<SelectListItem>()
@@ -45,7 +43,6 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost]
-
 		public async Task<IActionResult> Login(LoginRequestDto obj)
 		{
 			ResponseDto responseDto = await _authService.LoginAsync(obj);
@@ -67,7 +64,6 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost]
-
 		public async Task<IActionResult> Register(RegistrationRequestDto obj)
 		{
 			ResponseDto result = await _authService.RegisterAsync(obj);
