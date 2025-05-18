@@ -1,36 +1,91 @@
+using AutoMapper;
+using MessageBus;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using OrderAPI;
+using OrderAPI.Data;
+using OrderAPI.Extensions;
+using OrderAPI.Service;
+using OrderAPI.Service.IService;
+using OrderAPI.Utility;
 
-namespace OrderAPI
+var builder = WebApplication.CreateBuilder(args);
+// Add DbContext to the container.
+builder.Services.AddDbContext<AppDbContext>(option =>
 {
-	public class Program
+	option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+// Add AutoMapper to the container.
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<BackendApiAuthenticationHandler>();
+builder.Services.AddScoped<IMessageBus, MessageBus.MessageBus>();
+builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:ProductAPI"]))
+	.AddHttpMessageHandler<BackendApiAuthenticationHandler>();
+// Add Controllers to the container.
+builder.Services.AddControllers();
+// Add Swagger to the container.
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(option =>
+{
+	option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
 	{
-		public static void Main(string[] args)
+		Name = "Authorization",
+		Description = "Enter the Bearer Authorization string as following: 'Bearer Generated-JWT-Token'",
+		In = ParameterLocation.Header,
+		Type = SecuritySchemeType.ApiKey,
+		Scheme = JwtBearerDefaults.AuthenticationScheme
+	});
+
+	option.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
 		{
-			var builder = WebApplication.CreateBuilder(args);
-
-			// Add services to the container.
-
-			builder.Services.AddControllers();
-			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-			builder.Services.AddEndpointsApiExplorer();
-			builder.Services.AddSwaggerGen();
-
-			var app = builder.Build();
-
-			// Configure the HTTP request pipeline.
-			if (app.Environment.IsDevelopment())
+			new OpenApiSecurityScheme
 			{
-				app.UseSwagger();
-				app.UseSwaggerUI();
-			}
+				Reference = new OpenApiReference
+				{
+					Type=ReferenceType.SecurityScheme,
+					Id=JwtBearerDefaults.AuthenticationScheme
+				}
+			}, new string[]{ }
+		}
+	});
+});
+// Add Authentication and Authorization services.
+builder.AddAppAuthentication();
+builder.Services.AddAuthorization();
 
-			app.UseHttpsRedirection();
+var app = builder.Build();
 
-			app.UseAuthorization();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+	app.UseSwagger();
+	app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+ApplyMigration();
+app.Run();
 
 
-			app.MapControllers();
+void ApplyMigration()
+{
+	using (var scope = app.Services.CreateScope())
+	{
+		var _db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-			app.Run();
+		if (_db.Database.GetPendingMigrations().Count() > 0)
+		{
+			_db.Database.Migrate();
 		}
 	}
 }
