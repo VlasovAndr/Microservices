@@ -22,7 +22,13 @@ namespace WebApp.Controllers
 			return View(await LoadCartDtoBasedOnLoggedInUser());
 		}
 
-        public async Task<IActionResult> Remove(int cartDetailsId)
+		[Authorize]
+		public async Task<IActionResult> Checkout()
+		{
+			return View(await LoadCartDtoBasedOnLoggedInUser());
+		}
+
+		public async Task<IActionResult> Remove(int cartDetailsId)
         {
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
             ResponseDto? response = await _shoppingCartService.RemoveFromCartAsync(cartDetailsId);
