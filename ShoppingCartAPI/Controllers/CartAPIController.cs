@@ -2,7 +2,6 @@
 using MessageBus;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using ShoppingCartAPI.Data;
 using ShoppingCartAPI.Models;
 using ShoppingCartAPI.Models.Dto;
@@ -14,7 +13,6 @@ namespace ShoppingCartAPI.Controllers;
 [ApiController]
 public class CartAPIController : ControllerBase
 {
-
 	private ResponseDto _response;
 	private IMapper _mapper;
 	private readonly AppDbContext _db;
