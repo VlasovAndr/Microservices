@@ -10,10 +10,12 @@ namespace WebApp.Controllers
 	public class ShoppingCartController : Controller
 	{
 		private readonly IShoppingCartService _shoppingCartService;
+		private readonly IOrderService _orderService;
 
-		public ShoppingCartController(IShoppingCartService shoppingCartService)
+		public ShoppingCartController(IShoppingCartService shoppingCartService, IOrderService orderService)
 		{
 			_shoppingCartService = shoppingCartService;
+			_orderService = orderService;
 		}
 
 		[Authorize]
@@ -26,6 +28,26 @@ namespace WebApp.Controllers
 		public async Task<IActionResult> Checkout()
 		{
 			return View(await LoadCartDtoBasedOnLoggedInUser());
+		}
+
+		[HttpPost]
+		[ActionName("Checkout")]
+		public async Task<IActionResult> Checkout(CartDto cartDto)
+		{
+			CartDto cart = await LoadCartDtoBasedOnLoggedInUser();
+			cart.CartHeader.Phone = cartDto.CartHeader.Phone;
+			cart.CartHeader.Email = cartDto.CartHeader.Email;
+			cart.CartHeader.Name = cartDto.CartHeader.Name;
+
+			var response = await _orderService.CreateOrder(cart);
+
+			OrderHeaderDto orderHeader = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
+
+			if (response != null & response.IsSuccess)
+			{
+				// get stripe session and redirect to stripe to place order
+			}
+			return View();
 		}
 
 		public async Task<IActionResult> Remove(int cartDetailsId)
