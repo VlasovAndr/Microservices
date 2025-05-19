@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace OrderAPI.Models.Dto;
+﻿namespace OrderAPI.Models.Dto;
 
 public class CartHeaderDto
 {
