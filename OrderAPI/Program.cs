@@ -6,9 +6,9 @@ using Microsoft.OpenApi.Models;
 using OrderAPI;
 using OrderAPI.Data;
 using OrderAPI.Extensions;
-using OrderAPI.Service;
 using OrderAPI.Service.IService;
 using OrderAPI.Utility;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add DbContext to the container.
@@ -20,7 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductService, OrderAPI.Service.ProductService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<BackendApiAuthenticationHandler>();
 builder.Services.AddScoped<IMessageBus, MessageBus.MessageBus>();
@@ -67,6 +67,7 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
