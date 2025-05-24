@@ -50,8 +50,8 @@ namespace WebApp.Controllers
 
 				StripeRequestDto stripeRequestDto = new()
 				{
-					ApprovedUrl = domain + "cart/Confirmation?orderId=" + orderHeaderDto.OrderHeaderId,
-					CancelUrl = domain + "cart/checkout",
+					ApprovedUrl = domain + "shoppingcart/Confirmation?orderId=" + orderHeaderDto.OrderHeaderId,
+					CancelUrl = domain + "shoppingcart/checkout",
 					OrderHeader = orderHeaderDto
 				};
 
@@ -59,8 +59,8 @@ namespace WebApp.Controllers
 				StripeRequestDto stripeResponseResult = JsonConvert.DeserializeObject<StripeRequestDto>(Convert.ToString(stripeResponse.Result));
 				Response.Headers.Add("Location", stripeResponseResult.StripeSessionUrl);
 				return new StatusCodeResult(StatusCodes.Status303SeeOther);
-
 			}
+
 			return View();
 		}
 
