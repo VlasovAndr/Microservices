@@ -71,6 +71,14 @@ public class OrderAPIController : ControllerBase
 				Mode = "payment",
 			};
 
+			var discountsObj = new List<SessionDiscountOptions>()
+			{
+				new SessionDiscountOptions()
+				{
+					Coupon=stripeRequestDto.OrderHeader.CouponCode
+				}
+			};
+
 			foreach (var item in stripeRequestDto.OrderHeader.OrderDetails)
 			{
 				var sessionLineItem = new SessionLineItemOptions
@@ -90,7 +98,12 @@ public class OrderAPIController : ControllerBase
 				options.LineItems.Add(sessionLineItem);
 			}
 
-			var service = new SessionService();
+            if (stripeRequestDto.OrderHeader.Discount>0)
+            {
+				options.Discounts = discountsObj;
+            }
+
+            var service = new SessionService();
 			Session session = service.Create(options);
 
 			stripeRequestDto.StripeSessionUrl = session.Url;
