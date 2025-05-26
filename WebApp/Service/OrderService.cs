@@ -32,5 +32,15 @@ namespace WebApp.Service
 				Url = SD.OrderAPIBaseUrl + "/api/order/CreateStripeSession"
 			});
 		}
+
+		public async Task<ResponseDto?> ValidateStripeSession(int orderHeaderId)
+		{
+			return await _baseService.SendAsync(new RequestDto()
+			{
+				ApiType = SD.ApiType.POST,
+				Data = orderHeaderId,
+				Url = SD.OrderAPIBaseUrl + "/api/order/ValidateStripeSession"
+			});
+		}
 	}
 }

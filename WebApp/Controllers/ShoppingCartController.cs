@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using WebApp.Models;
 using WebApp.Service.IService;
+using WebApp.Utility;
 
 namespace WebApp.Controllers
 {
@@ -67,6 +68,19 @@ namespace WebApp.Controllers
 		[Authorize]
 		public async Task<IActionResult> Confirmation(int orderId)
 		{
+			ResponseDto? response = await _orderService.ValidateStripeSession(orderId);
+
+			if (response != null & response.IsSuccess)
+			{
+				OrderHeaderDto orderHeaderDto = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
+
+                if (orderHeaderDto.Status == SD.Status_Approved)
+                {
+					return View(orderId);
+				}
+			}
+
+			//redirect to some error page based on status
 			return View(orderId);
 		}
 
