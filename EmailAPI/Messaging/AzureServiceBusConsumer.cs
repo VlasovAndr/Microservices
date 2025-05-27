@@ -1,4 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
+using EmailAPI.Message;
 using EmailAPI.Models.Dtos;
 using EmailAPI.Services;
 using Newtonsoft.Json;
@@ -13,9 +14,12 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 	private readonly string registerUserQueue;
 	private readonly IConfiguration _configuration;
 	private readonly EmailService _emailService;
+	private readonly string orderCreated_Topic;
+	private readonly string orderCreated_Email_Subcription;
 
 	private ServiceBusProcessor _emailCartProcessor;
 	private ServiceBusProcessor _registerUserProcessor;
+	private ServiceBusProcessor _emailOrderPlacedProcessor;
 
 	public AzureServiceBusConsumer(IConfiguration configuration, EmailService emailService)
 	{
@@ -26,10 +30,13 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 
 		emailCartQueue = _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue");
 		registerUserQueue = _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue");
+		orderCreated_Topic = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
+		orderCreated_Email_Subcription = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreated_RewardsSubscription");
 
 		var client = new ServiceBusClient(serviceBusConnectionString);
 		_emailCartProcessor = client.CreateProcessor(emailCartQueue);
 		_registerUserProcessor = client.CreateProcessor(registerUserQueue);
+		_emailOrderPlacedProcessor = client.CreateProcessor(orderCreated_Topic, orderCreated_Email_Subcription);
 	}
 
 	public async Task Start()
@@ -41,6 +48,10 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 		_registerUserProcessor.ProcessMessageAsync += OnUserRegisterRequestReceived;
 		_registerUserProcessor.ProcessErrorAsync += ErrorHandler;
 		await _registerUserProcessor.StartProcessingAsync();
+
+		_emailOrderPlacedProcessor.ProcessMessageAsync += OnOrderPlacedRequestReceived;
+		_emailOrderPlacedProcessor.ProcessErrorAsync += ErrorHandler;
+		await _emailOrderPlacedProcessor.StartProcessingAsync();
 	}
 
 	public async Task Stop()
@@ -50,6 +61,9 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 
 		await _registerUserProcessor.StopProcessingAsync();
 		await _registerUserProcessor.DisposeAsync();
+
+		await _emailOrderPlacedProcessor.StopProcessingAsync();
+		await _emailOrderPlacedProcessor.DisposeAsync();
 	}
 
 	private async Task OnEmailRequestReceived(ProcessMessageEventArgs args)
@@ -64,6 +78,26 @@ public class AzureServiceBusConsumer : IAzureServiceBusConsumer
 		{
 			// TODO - try to log email
 			await _emailService.EmailCartAndLog(objMessage);
+			await args.CompleteMessageAsync(args.Message);
+		}
+		catch (Exception ex)
+		{
+			throw;
+		}
+	}
+
+	private async Task OnOrderPlacedRequestReceived(ProcessMessageEventArgs args)
+	{
+		// this is where you will receive message
+		var message = args.Message;
+		var body = Encoding.UTF8.GetString(message.Body);
+
+		RewardsMessage objMessage = JsonConvert.DeserializeObject<RewardsMessage>(body);
+
+		try
+		{
+			// TODO - try to log email
+			await _emailService.LogPlacedOrder(objMessage);
 			await args.CompleteMessageAsync(args.Message);
 		}
 		catch (Exception ex)
