@@ -75,7 +75,7 @@ public class OrderAPIController : ControllerBase
 	}
 
 	[Authorize]
-	[HttpGet("GetOrders/{id:int}")]
+	[HttpGet("GetOrder/{id:int}")]
 	public ResponseDto? Get(int id)
 	{
 		try
@@ -216,6 +216,39 @@ public class OrderAPIController : ControllerBase
 
 				_response.Result = _mapper.Map<OrderHeaderDto>(orderHeader);
 			}
+		}
+		catch (Exception ex)
+		{
+			_response.IsSuccess = false;
+			_response.Message = ex.Message;
+		}
+
+		return _response;
+	}
+
+	[Authorize]
+	[HttpGet("UpdateOrderStatus/{orderId:int}")]
+	public async Task<ResponseDto> UpdateOrderStatus(int orderId, [FromBody] string newStatus)
+	{
+		try
+		{
+			OrderHeader orderHeader = _db.OrderHeaders.First(u => u.OrderHeaderId == orderId);
+
+			if (newStatus == SD.Status_Cancelled)
+			{
+				var options = new RefundCreateOptions()
+				{
+					Reason = RefundReasons.RequestedByCustomer,
+					PaymentIntent = orderHeader.PaymentIntentId
+				};
+
+				var service = new RefundService();
+				Refund refund = service.Create(options);
+			}
+			orderHeader.Status = newStatus;
+			_db.SaveChanges();
+
+			_response.Result = _mapper.Map<OrderHeaderDto>(orderHeader);
 		}
 		catch (Exception ex)
 		{
