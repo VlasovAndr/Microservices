@@ -227,7 +227,7 @@ public class OrderAPIController : ControllerBase
 	}
 
 	[Authorize]
-	[HttpGet("UpdateOrderStatus/{orderId:int}")]
+	[HttpPost("UpdateOrderStatus/{orderId:int}")]
 	public async Task<ResponseDto> UpdateOrderStatus(int orderId, [FromBody] string newStatus)
 	{
 		try
